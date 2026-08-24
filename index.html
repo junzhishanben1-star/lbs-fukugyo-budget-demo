@@ -1,0 +1,1325 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>LBS 副業支援事業部 予算デモ</title>
+  <style>
+    :root {
+      --bg: #f4f6f8;
+      --paper: #ffffff;
+      --ink: #20262d;
+      --muted: #66727e;
+      --line: #dfe7ee;
+      --soft: #f0f4f7;
+      --green: #267552;
+      --red: #d84d49;
+      --blue: #238da6;
+      --shadow: 0 16px 42px rgba(32, 44, 56, 0.1);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-width: 320px;
+      background: var(--bg);
+      color: var(--ink);
+      font-family: -apple-system, BlinkMacSystemFont, "Hiragino Sans", "Yu Gothic", "YuGothic", sans-serif;
+      letter-spacing: 0;
+    }
+
+    button,
+    input,
+    select {
+      font: inherit;
+    }
+
+    button {
+      border: 0;
+      cursor: pointer;
+    }
+
+    h1,
+    h2,
+    h3,
+    p {
+      margin: 0;
+    }
+
+    .page {
+      min-height: 100dvh;
+      padding: 24px 16px;
+      display: grid;
+      place-items: start center;
+    }
+
+    .app {
+      width: min(940px, 100%);
+      min-height: min(740px, calc(100dvh - 48px));
+      background: var(--paper);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      box-shadow: var(--shadow);
+      overflow: hidden;
+      display: grid;
+      grid-template-rows: auto auto minmax(0, 1fr);
+    }
+
+    .header {
+      padding: 20px 22px 15px;
+      border-bottom: 1px solid var(--line);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      background: #fbfcfd;
+    }
+
+    .title {
+      min-width: 0;
+      display: grid;
+      gap: 4px;
+    }
+
+    h1 {
+      font-size: 22px;
+      line-height: 1.25;
+      font-weight: 900;
+    }
+
+    .muted {
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.5;
+    }
+
+    .month-control {
+      display: grid;
+      gap: 4px;
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 900;
+      white-space: nowrap;
+    }
+
+    .month-control select {
+      width: auto;
+      min-width: 126px;
+      min-height: 34px;
+      border-radius: 999px;
+      padding: 0 30px 0 13px;
+      font-size: 13px;
+      font-weight: 900;
+      color: var(--ink);
+    }
+
+    .tabs {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 4px;
+      padding: 0 18px;
+      border-bottom: 1px solid var(--line);
+      background: var(--paper);
+    }
+
+    .tab {
+      min-height: 50px;
+      border-bottom: 3px solid transparent;
+      background: transparent;
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 900;
+    }
+
+    .tab.active {
+      border-bottom-color: var(--green);
+      color: var(--green);
+    }
+
+    .main {
+      min-height: 0;
+      overflow: auto;
+      background: #f8fafb;
+    }
+
+    .view {
+      padding: 20px 22px 26px;
+      display: grid;
+      gap: 14px;
+    }
+
+    .view[hidden] {
+      display: none;
+    }
+
+    .view-head {
+      display: flex;
+      align-items: end;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    h2 {
+      font-size: 21px;
+      line-height: 1.25;
+      font-weight: 900;
+    }
+
+    h3 {
+      font-size: 15px;
+      line-height: 1.35;
+      font-weight: 900;
+    }
+
+    .balance-panel,
+    .statement,
+    .total-panel,
+    .form-panel {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--paper);
+      box-shadow: 0 10px 24px rgba(32, 44, 56, 0.06);
+    }
+
+    .balance-panel {
+      padding: 18px;
+      display: grid;
+      gap: 8px;
+    }
+
+    .balance-main {
+      min-width: 0;
+      display: grid;
+      gap: 8px;
+    }
+
+    .eyebrow {
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 900;
+    }
+
+    .balance-amount {
+      font-size: 42px;
+      line-height: 1;
+      font-weight: 900;
+      white-space: nowrap;
+    }
+
+    .balance-amount.negative {
+      color: var(--red);
+    }
+
+    .small-button {
+      min-height: 34px;
+      border-radius: 8px;
+      background: var(--soft);
+      color: var(--ink);
+      padding: 0 12px;
+      font-size: 13px;
+      font-weight: 900;
+    }
+
+    .small-button:hover {
+      background: #e6edf2;
+    }
+
+    .balance-form {
+      width: 100%;
+      display: grid;
+      grid-template-columns: minmax(118px, 0.9fr) minmax(150px, 1.3fr) minmax(118px, 0.9fr);
+      gap: 10px;
+      align-items: end;
+    }
+
+    .balance-form .primary-button {
+      width: 100%;
+      grid-column: 1 / -1;
+    }
+
+    .balance-form[hidden] {
+      display: none;
+    }
+
+    .statement {
+      overflow: hidden;
+    }
+
+    .review-panel {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--paper);
+      box-shadow: 0 10px 24px rgba(32, 44, 56, 0.06);
+      overflow: hidden;
+    }
+
+    .statement-head,
+    .statement-row {
+      display: grid;
+      grid-template-columns: 120px minmax(0, 1fr) auto auto;
+      gap: 12px;
+      align-items: center;
+    }
+
+    .statement-head {
+      min-height: 36px;
+      padding: 0 14px;
+      background: var(--soft);
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 900;
+    }
+
+    .review-head,
+    .review-row {
+      width: 100%;
+      display: grid;
+      grid-template-columns: 90px repeat(3, minmax(80px, 1fr));
+      gap: 10px;
+      align-items: center;
+    }
+
+    .review-head {
+      min-height: 36px;
+      padding: 0 14px;
+      background: var(--soft);
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 900;
+    }
+
+    .review-row {
+      min-height: 46px;
+      padding: 8px 14px;
+      border-top: 1px solid var(--line);
+      background: var(--paper);
+      color: var(--ink);
+      text-align: left;
+    }
+
+    .review-row.active {
+      background: #eef7f2;
+    }
+
+    .review-month {
+      font-size: 12px;
+      font-weight: 900;
+      color: var(--ink);
+      white-space: nowrap;
+    }
+
+    .review-value {
+      justify-self: end;
+      font-size: 13px;
+      font-weight: 900;
+      white-space: nowrap;
+    }
+
+    .review-value.balance {
+      color: var(--ink);
+    }
+
+    .review-value.expense {
+      color: var(--red);
+    }
+
+    .review-value.planned {
+      color: var(--blue);
+    }
+
+    .statement-row {
+      min-height: 50px;
+      padding: 9px 14px;
+      border-top: 1px solid var(--line);
+    }
+
+    .date {
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 900;
+      white-space: nowrap;
+    }
+
+    .copy {
+      min-width: 0;
+      display: grid;
+      gap: 2px;
+    }
+
+    .row-title {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      font-size: 14px;
+      font-weight: 900;
+    }
+
+    .row-sub {
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 800;
+    }
+
+    .badge {
+      justify-self: start;
+      min-height: 24px;
+      border-radius: 999px;
+      padding: 0 9px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--soft);
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 900;
+      white-space: nowrap;
+    }
+
+    .badge.balance {
+      color: var(--ink);
+    }
+
+    .badge.deposit {
+      background: #e7f3ed;
+      color: var(--green);
+    }
+
+    .badge.expense {
+      background: #fdeceb;
+      color: var(--red);
+    }
+
+    .badge.planned {
+      background: #e7f4f8;
+      color: var(--blue);
+    }
+
+    .amount {
+      justify-self: end;
+      font-size: 15px;
+      line-height: 1;
+      font-weight: 900;
+      white-space: nowrap;
+    }
+
+    .amount.balance {
+      color: var(--ink);
+    }
+
+    .amount.deposit {
+      color: var(--green);
+    }
+
+    .amount.expense {
+      color: var(--red);
+    }
+
+    .amount.planned {
+      color: var(--blue);
+    }
+
+    .total-panel {
+      padding: 14px 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .total-panel strong {
+      font-size: 28px;
+      line-height: 1;
+      font-weight: 900;
+      white-space: nowrap;
+    }
+
+    .list {
+      display: grid;
+      gap: 6px;
+    }
+
+    .money-row {
+      min-height: 48px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--paper);
+      padding: 8px 10px;
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto 30px;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .delete-row {
+      width: 30px;
+      height: 30px;
+      border-radius: 999px;
+      background: var(--soft);
+      color: var(--muted);
+      font-size: 16px;
+      line-height: 1;
+      font-weight: 900;
+    }
+
+    .delete-row:hover {
+      background: #e6edf2;
+      color: var(--ink);
+    }
+
+    .empty {
+      min-height: 82px;
+      border: 1px dashed #cbd6de;
+      border-radius: 8px;
+      background: var(--paper);
+      color: var(--muted);
+      display: grid;
+      place-items: center;
+      padding: 18px;
+      text-align: center;
+      font-size: 13px;
+      font-weight: 900;
+    }
+
+    .form-panel {
+      padding: 14px;
+      display: grid;
+      gap: 12px;
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: minmax(140px, 0.8fr) minmax(180px, 1.2fr) minmax(130px, 0.7fr) auto;
+      gap: 10px;
+      align-items: end;
+    }
+
+    label {
+      display: grid;
+      gap: 6px;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 900;
+    }
+
+    input,
+    select {
+      width: 100%;
+      min-height: 40px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #ffffff;
+      color: var(--ink);
+      padding: 0 11px;
+      font-size: 16px;
+      font-weight: 800;
+      outline: none;
+    }
+
+    input:focus,
+    select:focus {
+      border-color: var(--green);
+      box-shadow: 0 0 0 3px rgba(38, 117, 82, 0.14);
+    }
+
+    .primary-button {
+      min-height: 40px;
+      border-radius: 8px;
+      background: var(--green);
+      color: #ffffff;
+      padding: 0 15px;
+      font-size: 14px;
+      font-weight: 900;
+      white-space: nowrap;
+    }
+
+    .primary-button:hover {
+      background: #1f6144;
+    }
+
+    .toast {
+      position: fixed;
+      left: 50%;
+      bottom: 20px;
+      transform: translate(-50%, 8px);
+      opacity: 0;
+      max-width: calc(100vw - 36px);
+      border-radius: 8px;
+      background: var(--ink);
+      color: #ffffff;
+      padding: 11px 14px;
+      box-shadow: var(--shadow);
+      font-size: 13px;
+      text-align: center;
+      pointer-events: none;
+      transition: opacity 180ms ease, transform 180ms ease;
+      z-index: 20;
+    }
+
+    .toast.show {
+      opacity: 1;
+      transform: translate(-50%, 0);
+    }
+
+    @media (max-width: 720px) {
+      .page {
+        padding: 0;
+      }
+
+      .app {
+        width: 100%;
+        min-height: 100dvh;
+        border: 0;
+        border-radius: 0;
+        box-shadow: none;
+      }
+
+      .header {
+        padding: 17px 14px 13px;
+        align-items: start;
+      }
+
+      h1 {
+        font-size: 19px;
+      }
+
+      .month-control select {
+        min-width: 112px;
+        min-height: 31px;
+        padding: 0 26px 0 9px;
+        font-size: 12px;
+      }
+
+      .tabs {
+        padding: 0 8px;
+        gap: 2px;
+      }
+
+      .tab {
+        min-height: 46px;
+        font-size: 12px;
+      }
+
+      .view {
+        padding: 16px 12px 22px;
+      }
+
+      .balance-panel {
+        padding: 15px;
+      }
+
+      .balance-amount {
+        font-size: 34px;
+      }
+
+      .balance-form {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 6px;
+      }
+
+      .balance-form label {
+        gap: 5px;
+        font-size: 11px;
+      }
+
+      .balance-form input {
+        min-height: 38px;
+        padding: 0 7px;
+        font-size: 13px;
+      }
+
+      .form-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .statement-head,
+      .statement-row {
+        grid-template-columns: 86px minmax(0, 1fr) auto;
+        gap: 8px;
+      }
+
+      .review-head,
+      .review-row {
+        grid-template-columns: 58px repeat(3, minmax(0, 1fr));
+        gap: 6px;
+      }
+
+      .review-head {
+        padding: 0 10px;
+      }
+
+      .review-row {
+        padding: 8px 10px;
+      }
+
+      .review-value {
+        font-size: 12px;
+      }
+
+      .statement-head span:nth-child(3),
+      .statement-row .badge {
+        display: none;
+      }
+
+      .total-panel {
+        display: grid;
+        gap: 8px;
+      }
+
+      .total-panel strong {
+        font-size: 24px;
+      }
+
+      .primary-button {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <section class="app" aria-label="副業支援事業部 予算">
+      <header class="header">
+        <div class="title">
+          <h1>副業支援事業部 予算管理</h1>
+        </div>
+        <label class="month-control">
+          対象月
+          <select id="monthSelect" aria-label="対象月"></select>
+        </label>
+      </header>
+
+      <nav class="tabs" aria-label="画面切り替え">
+        <button class="tab active" type="button" data-view="balance" aria-selected="true">残高</button>
+        <button class="tab" type="button" data-view="current" aria-selected="false">今月支出</button>
+        <button class="tab" type="button" data-view="next" aria-selected="false">来月支出予定</button>
+      </nav>
+
+      <div class="main">
+        <section class="view" id="balanceView" data-view="balance" aria-labelledby="balanceTitle">
+          <section class="balance-panel">
+            <div class="balance-main">
+              <h2 id="balanceTitle">残高</h2>
+              <strong class="balance-amount" id="balanceText">0円</strong>
+              <p class="muted">最終更新: <span id="updatedText">未更新</span></p>
+            </div>
+          </section>
+
+          <section class="form-panel">
+            <div class="view-head">
+              <h3>残高更新</h3>
+            </div>
+            <form class="balance-form" id="balanceForm">
+              <label>
+                更新日
+                <input id="updatedAtInput" type="date" value="2026-07-31">
+              </label>
+              <label>
+                入金元
+                <input id="balanceSourceInput" type="text" value="統括 事業部予算" autocomplete="off">
+              </label>
+              <label>
+                入金額
+                <input id="balanceAmountInput" type="number" min="1" step="1" inputmode="numeric" value="600000">
+              </label>
+              <button class="primary-button" type="submit">反映</button>
+            </form>
+          </section>
+
+          <section class="statement" aria-label="残高サマリー">
+            <div class="statement-head">
+              <span>日付</span>
+              <span>内容</span>
+              <span>種別</span>
+              <span>金額</span>
+            </div>
+            <div id="summaryList"></div>
+          </section>
+
+          <section class="review-panel" aria-label="月別振り返り">
+            <div class="review-head">
+              <span>月</span>
+              <span>今月支出</span>
+              <span>翌月予定</span>
+              <span>残高</span>
+            </div>
+            <div id="reviewList"></div>
+          </section>
+        </section>
+
+        <section class="view" id="currentView" data-view="current" aria-labelledby="currentTitle" hidden>
+          <div class="view-head">
+            <div>
+              <h2 id="currentTitle">今月支出</h2>
+              <p class="muted">今月、支出として確定している内訳</p>
+            </div>
+          </div>
+
+          <section class="total-panel">
+            <span class="eyebrow">今月支出 合計 <span id="currentCountText">0件</span></span>
+            <strong class="amount expense" id="currentTotalText">0円</strong>
+          </section>
+
+          <div class="list" id="currentList"></div>
+
+          <form class="form-panel" id="currentForm">
+            <h3>支出を追加</h3>
+            <div class="form-grid">
+              <label>
+                カテゴリ
+                <select id="currentCategory"></select>
+              </label>
+              <label>
+                内容
+                <input id="currentMemo" type="text" value="クラウドワークス採用" autocomplete="off">
+              </label>
+              <label>
+                金額
+                <input id="currentAmount" type="number" min="1" step="1" inputmode="numeric" value="10000">
+              </label>
+              <button class="primary-button" type="submit">追加</button>
+            </div>
+          </form>
+        </section>
+
+        <section class="view" id="nextView" data-view="next" aria-labelledby="nextTitle" hidden>
+          <div class="view-head">
+            <div>
+              <h2 id="nextTitle">来月支出予定</h2>
+              <p class="muted">来月、使う予定の内訳</p>
+            </div>
+          </div>
+
+          <section class="total-panel">
+            <span class="eyebrow">来月支出予定 合計 <span id="nextCountText">0件</span></span>
+            <strong class="amount planned" id="nextTotalText">0円</strong>
+          </section>
+
+          <div class="list" id="nextList"></div>
+
+          <form class="form-panel" id="nextForm">
+            <h3>支出予定を追加</h3>
+            <div class="form-grid">
+              <label>
+                カテゴリ
+                <select id="nextCategory"></select>
+              </label>
+              <label>
+                内容
+                <input id="nextMemo" type="text" value="求人広告テスト" autocomplete="off">
+              </label>
+              <label>
+                金額
+                <input id="nextAmount" type="number" min="1" step="1" inputmode="numeric" value="10000">
+              </label>
+              <button class="primary-button" type="submit">追加</button>
+            </div>
+          </form>
+        </section>
+      </div>
+    </section>
+  </main>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <script>
+    (() => {
+      const defaultMonth = "2026-08";
+      const storageKey = "lbs-fukugyo-balance-v6";
+      const olderStorageKeys = [
+        "lbs-fukugyo-balance-v5",
+        "lbs-fukugyo-balance-v4",
+        "lbs-fukugyo-budget-ui-v3",
+        "lbs-fukugyo-bottom-nav-v2",
+        "lbs-fukugyo-bottom-nav-v1",
+        "lbs-fukugyo-card-calculator-v1"
+      ];
+      const categories = ["採用", "広告", "AI・システム", "外注", "制作", "SNS運用", "その他"];
+      const seed = {
+        selectedMonth: defaultMonth,
+        balanceUpdates: [
+          { id: "b1", date: "2026-07-31", source: "統括 事業部予算", amount: 600000 }
+        ],
+        items: [
+          { id: "c1", target: "current", month: "2026-08", category: "採用", memo: "クラウドワークス採用", amount: 70000 },
+          { id: "c2", target: "current", month: "2026-08", category: "AI・システム", memo: "Codex / API", amount: 30000 },
+          { id: "c3", target: "current", month: "2026-08", category: "制作", memo: "LP修正外注", amount: 20000 },
+          { id: "n1", target: "next", month: "2026-09", category: "採用", memo: "追加採用", amount: 50000 },
+          { id: "n2", target: "next", month: "2026-09", category: "広告", memo: "求人広告テスト", amount: 30000 }
+        ]
+      };
+
+      let state = loadState();
+      let activeView = "balance";
+
+      const els = {
+        views: [...document.querySelectorAll(".view")],
+        tabs: [...document.querySelectorAll(".tab")],
+        monthSelect: document.getElementById("monthSelect"),
+        balanceText: document.getElementById("balanceText"),
+        updatedText: document.getElementById("updatedText"),
+        balanceForm: document.getElementById("balanceForm"),
+        balanceSourceInput: document.getElementById("balanceSourceInput"),
+        balanceAmountInput: document.getElementById("balanceAmountInput"),
+        updatedAtInput: document.getElementById("updatedAtInput"),
+        summaryList: document.getElementById("summaryList"),
+        reviewList: document.getElementById("reviewList"),
+        currentTotalText: document.getElementById("currentTotalText"),
+        currentCountText: document.getElementById("currentCountText"),
+        currentList: document.getElementById("currentList"),
+        currentForm: document.getElementById("currentForm"),
+        currentCategory: document.getElementById("currentCategory"),
+        currentMemo: document.getElementById("currentMemo"),
+        currentAmount: document.getElementById("currentAmount"),
+        nextTotalText: document.getElementById("nextTotalText"),
+        nextCountText: document.getElementById("nextCountText"),
+        nextList: document.getElementById("nextList"),
+        nextForm: document.getElementById("nextForm"),
+        nextCategory: document.getElementById("nextCategory"),
+        nextMemo: document.getElementById("nextMemo"),
+        nextAmount: document.getElementById("nextAmount"),
+        toast: document.getElementById("toast")
+      };
+
+      function loadState() {
+        try {
+          const saved = JSON.parse(localStorage.getItem(storageKey));
+          if (saved && Array.isArray(saved.items)) {
+            return normalizeState(saved);
+          }
+
+          for (const key of olderStorageKeys) {
+            const oldSaved = JSON.parse(localStorage.getItem(key));
+            if (oldSaved && Array.isArray(oldSaved.items)) {
+              return normalizeState(oldSaved);
+            }
+          }
+
+          return clone(seed);
+        } catch {
+          return clone(seed);
+        }
+      }
+
+      function normalizeState(value) {
+        const selectedMonth = validMonth(value.selectedMonth) ? value.selectedMonth : defaultMonth;
+        const legacyBalance = Number(value.currentBalance ?? value.balance ?? value.baseBudget ?? 0);
+        const balanceUpdates = Array.isArray(value.balanceUpdates) && value.balanceUpdates.length
+          ? value.balanceUpdates
+          : [{
+            id: "b-migrated",
+            date: value.updatedAt || seed.balanceUpdates[0].date,
+            source: "統括 事業部予算",
+            amount: legacyBalance || seed.balanceUpdates[0].amount
+          }];
+
+        return {
+          selectedMonth,
+          balanceUpdates: balanceUpdates.map((update, index) => ({
+            id: String(update.id || `balance-${index}`),
+            date: String(update.date || update.updatedAt || seed.balanceUpdates[0].date),
+            source: String(update.source || "統括 事業部予算"),
+            amount: Number(update.amount || 0)
+          })).filter((update) => update.amount > 0),
+          items: value.items.map((item, index) => {
+            const target = item.target === "next" ? "next" : item.target === "current" ? "current" : "";
+            const month = validMonth(item.month) ? item.month : target === "next" ? nextMonth(selectedMonth) : selectedMonth;
+            return {
+              id: String(item.id || `${target || "item"}-${index}`),
+              target,
+              month,
+              category: categories.includes(item.category) ? item.category : "その他",
+              memo: String(item.memo || "未入力"),
+              amount: Number(item.amount || 0)
+            };
+          }).filter((item) => item.target && item.amount > 0)
+        };
+      }
+
+      function clone(value) {
+        return JSON.parse(JSON.stringify(value));
+      }
+
+      function saveState() {
+        localStorage.setItem(storageKey, JSON.stringify(state));
+      }
+
+      function yen(value) {
+        return `${Number(value || 0).toLocaleString("ja-JP")}円`;
+      }
+
+      function minusYen(value) {
+        return value ? `-${yen(value)}` : "0円";
+      }
+
+      function plusYen(value) {
+        return value ? `+${yen(value)}` : "0円";
+      }
+
+      function sum(items) {
+        return items.reduce((total, item) => total + Number(item.amount || 0), 0);
+      }
+
+      function itemsFor(target, month) {
+        return state.items.filter((item) => item.target === target && item.month === month);
+      }
+
+      function sortedBalanceUpdates() {
+        return [...state.balanceUpdates].sort((a, b) => a.date.localeCompare(b.date));
+      }
+
+      function balanceUpdatesUntil(month) {
+        const endDate = monthEndDate(month);
+        return sortedBalanceUpdates().filter((update) => update.date <= endDate);
+      }
+
+      function balanceUpdateTotalUntil(month) {
+        return sum(balanceUpdatesUntil(month));
+      }
+
+      function latestBalanceUpdateUntil(month) {
+        return balanceUpdatesUntil(month).at(-1) || null;
+      }
+
+      function render() {
+        if (!validMonth(state.selectedMonth)) {
+          state.selectedMonth = defaultMonth;
+        }
+
+        const currentMonth = state.selectedMonth;
+        const nextTargetMonth = nextMonth(currentMonth);
+        const currentItems = itemsFor("current", currentMonth);
+        const nextItems = itemsFor("next", nextTargetMonth);
+        const currentTotal = sum(currentItems);
+        const nextTotal = sum(nextItems);
+        const updateTotal = balanceUpdateTotalUntil(currentMonth);
+        const availableBalance = updateTotal - currentTotal;
+        const latestUpdate = latestBalanceUpdateUntil(currentMonth);
+
+        renderMonthOptions();
+        els.balanceText.textContent = yen(availableBalance);
+        els.balanceText.className = `balance-amount${availableBalance < 0 ? " negative" : ""}`;
+        els.updatedAtInput.value = latestUpdate?.date || seed.balanceUpdates[0].date;
+        els.balanceSourceInput.value = latestUpdate?.source || "統括 事業部予算";
+        els.balanceAmountInput.value = "";
+        els.updatedText.textContent = latestUpdate ? formatDate(latestUpdate.date) : "未更新";
+        els.currentTotalText.textContent = minusYen(currentTotal);
+        els.currentCountText.textContent = `${currentItems.length}件`;
+        els.nextTotalText.textContent = minusYen(nextTotal);
+        els.nextCountText.textContent = `${nextItems.length}件`;
+
+        renderSummary(currentMonth, nextTargetMonth, currentTotal, nextTotal);
+        renderReview();
+        renderMoneyList(els.currentList, currentItems, "current");
+        renderMoneyList(els.nextList, nextItems, "next");
+      }
+
+      function renderSummary(currentMonth, nextTargetMonth, currentTotal, nextTotal) {
+        let runningBalance = 0;
+        const depositRows = balanceUpdatesUntil(currentMonth).map((update) => {
+          runningBalance += Number(update.amount || 0);
+          return {
+            date: compactDate(update.date),
+            memo: update.source,
+            badge: "入金",
+            kind: "deposit",
+            amount: plusYen(update.amount),
+            balance: runningBalance
+          };
+        });
+        const afterCurrent = runningBalance - currentTotal;
+        const afterNext = afterCurrent - nextTotal;
+        const rows = [
+          ...depositRows,
+          {
+            date: compactMonth(currentMonth),
+            memo: "今月支出",
+            badge: "支出",
+            kind: "expense",
+            amount: minusYen(currentTotal),
+            balance: afterCurrent
+          },
+          {
+            date: compactMonth(nextTargetMonth),
+            memo: "来月支出予定",
+            badge: "予定",
+            kind: "planned",
+            amount: minusYen(nextTotal),
+            balance: afterNext
+          }
+        ];
+
+        els.summaryList.innerHTML = rows.map(summaryRow).join("");
+      }
+
+      function renderMonthOptions() {
+        const months = reviewMonths();
+        els.monthSelect.innerHTML = months.map((month) => {
+          const selected = month === state.selectedMonth ? " selected" : "";
+          return `<option value="${month}"${selected}>${monthLabel(month)}</option>`;
+        }).join("");
+      }
+
+      function renderReview() {
+        const months = reviewMonths();
+        els.reviewList.innerHTML = months.map((month) => {
+          const currentTotal = sum(itemsFor("current", month));
+          const plannedTotal = sum(itemsFor("next", nextMonth(month)));
+          const balance = balanceUpdateTotalUntil(month) - currentTotal;
+          const active = month === state.selectedMonth ? " active" : "";
+          const balanceClass = balance < 0 ? " expense" : " balance";
+
+          return `
+            <button class="review-row${active}" type="button" data-month="${month}">
+              <span class="review-month">${escapeHtml(compactMonth(month))}</span>
+              <span class="review-value expense">${minusYen(currentTotal)}</span>
+              <span class="review-value planned">${minusYen(plannedTotal)}</span>
+              <span class="review-value${balanceClass}">${yen(balance)}</span>
+            </button>
+          `;
+        }).join("");
+      }
+
+      function summaryRow(row) {
+        return `
+          <article class="statement-row">
+            <span class="date">${escapeHtml(row.date)}</span>
+            <div class="copy">
+              <strong class="row-title">${escapeHtml(row.memo)}</strong>
+            </div>
+            <span class="badge ${row.kind}">${escapeHtml(row.badge)}</span>
+            <strong class="amount ${row.kind}">${escapeHtml(row.amount)}</strong>
+          </article>
+        `;
+      }
+
+      function renderMoneyList(container, items, target) {
+        if (!items.length) {
+          const label = target === "current" ? "今月支出" : "来月支出予定";
+          container.innerHTML = `<div class="empty">${label}は未登録です</div>`;
+          return;
+        }
+
+        container.innerHTML = items.map((item) => moneyRow(item, target)).join("");
+      }
+
+      function moneyRow(item, target) {
+        const kind = target === "current" ? "expense" : "planned";
+        return `
+          <article class="money-row">
+            <div class="copy">
+              <strong class="row-title">${escapeHtml(item.memo)}</strong>
+              <span class="row-sub">${escapeHtml(item.category)}</span>
+            </div>
+            <strong class="amount ${kind}">${minusYen(item.amount)}</strong>
+            <button class="delete-row" type="button" data-id="${escapeHtml(item.id)}" aria-label="${escapeHtml(item.memo)}を削除">×</button>
+          </article>
+        `;
+      }
+
+      function renderCategoryOptions() {
+        const html = categories.map((category) => `<option value="${category}">${category}</option>`).join("");
+        els.currentCategory.innerHTML = html;
+        els.nextCategory.innerHTML = html;
+      }
+
+      function setView(viewName) {
+        activeView = viewName;
+        els.views.forEach((view) => {
+          view.hidden = view.dataset.view !== viewName;
+        });
+        els.tabs.forEach((tab) => {
+          const isActive = tab.dataset.view === viewName;
+          tab.classList.toggle("active", isActive);
+          tab.setAttribute("aria-selected", String(isActive));
+        });
+        document.querySelector(".main").scrollTop = 0;
+      }
+
+      function reviewMonths() {
+        const months = new Set([defaultMonth, state.selectedMonth]);
+        state.balanceUpdates.forEach((update) => {
+          months.add(monthFromDate(update.date));
+        });
+        state.items.forEach((item) => {
+          if (!validMonth(item.month)) {
+            return;
+          }
+
+          months.add(item.target === "next" ? previousMonth(item.month) : item.month);
+        });
+
+        return [...months].filter(validMonth).sort((a, b) => b.localeCompare(a));
+      }
+
+      function validMonth(value) {
+        return /^\d{4}-\d{2}$/.test(String(value || ""));
+      }
+
+      function monthFromDate(value) {
+        const match = String(value || "").match(/^(\d{4})-(\d{2})/);
+        return match ? `${match[1]}-${match[2]}` : defaultMonth;
+      }
+
+      function nextMonth(month) {
+        return offsetMonth(month, 1);
+      }
+
+      function previousMonth(month) {
+        return offsetMonth(month, -1);
+      }
+
+      function offsetMonth(month, offset) {
+        const safeMonth = validMonth(month) ? month : defaultMonth;
+        const [year, monthNumber] = safeMonth.split("-").map(Number);
+        const date = new Date(year, monthNumber - 1 + offset, 1);
+        return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}`;
+      }
+
+      function monthEndDate(month) {
+        const safeMonth = validMonth(month) ? month : defaultMonth;
+        const [year, monthNumber] = safeMonth.split("-").map(Number);
+        const lastDay = new Date(year, monthNumber, 0).getDate();
+        return `${safeMonth}-${String(lastDay).padStart(2, "0")}`;
+      }
+
+      function monthLabel(month) {
+        const safeMonth = validMonth(month) ? month : defaultMonth;
+        const [year, monthNumber] = safeMonth.split("-");
+        return `${year}年${Number(monthNumber)}月`;
+      }
+
+      function compactMonth(month) {
+        const safeMonth = validMonth(month) ? month : defaultMonth;
+        const [year, monthNumber] = safeMonth.split("-");
+        return `${year}/${Number(monthNumber)}`;
+      }
+
+      function addItem(target, category, memo, amount) {
+        if (!memo || amount < 1) {
+          showToast("内容と金額を入力してください");
+          return;
+        }
+
+        state.items.push({
+          id: `${target}-${Date.now()}`,
+          target,
+          month: target === "next" ? nextMonth(state.selectedMonth) : state.selectedMonth,
+          category,
+          memo,
+          amount
+        });
+        saveState();
+        render();
+        setView(target);
+        showToast("追加しました");
+      }
+
+      function escapeHtml(value) {
+        return String(value).replace(/[&<>"']/g, (char) => ({
+          "&": "&amp;",
+          "<": "&lt;",
+          ">": "&gt;",
+          '"': "&quot;",
+          "'": "&#039;"
+        })[char]);
+      }
+
+      function formatDate(value) {
+        if (!value) {
+          return "未更新";
+        }
+
+        const [year, month, day] = value.split("-");
+        return `${year}年${Number(month)}月${Number(day)}日`;
+      }
+
+      function compactDate(value) {
+        if (!value) {
+          return "";
+        }
+
+        const [year, month, day] = value.split("-");
+        return `${year}/${Number(month)}/${Number(day)}`;
+      }
+
+      function showToast(message) {
+        els.toast.textContent = message;
+        els.toast.classList.add("show");
+        clearTimeout(showToast.timer);
+        showToast.timer = setTimeout(() => els.toast.classList.remove("show"), 1400);
+      }
+
+      els.tabs.forEach((tab) => {
+        tab.addEventListener("click", () => setView(tab.dataset.view));
+      });
+
+      els.monthSelect.addEventListener("change", () => {
+        state.selectedMonth = els.monthSelect.value;
+        saveState();
+        render();
+      });
+
+      els.balanceForm.addEventListener("submit", (event) => {
+        event.preventDefault();
+        const amount = Number(els.balanceAmountInput.value || 0);
+        const source = els.balanceSourceInput.value.trim();
+        if (!source || amount < 1) {
+          showToast("入金元と入金額を入力してください");
+          return;
+        }
+
+        const updateDate = els.updatedAtInput.value || seed.balanceUpdates[0].date;
+        state.balanceUpdates.push({
+          id: `balance-${Date.now()}`,
+          date: updateDate,
+          source,
+          amount
+        });
+        state.selectedMonth = monthFromDate(updateDate);
+        saveState();
+        render();
+        showToast("入金を反映しました");
+      });
+
+      els.currentForm.addEventListener("submit", (event) => {
+        event.preventDefault();
+        addItem("current", els.currentCategory.value, els.currentMemo.value.trim(), Number(els.currentAmount.value || 0));
+      });
+
+      els.nextForm.addEventListener("submit", (event) => {
+        event.preventDefault();
+        addItem("next", els.nextCategory.value, els.nextMemo.value.trim(), Number(els.nextAmount.value || 0));
+      });
+
+      document.addEventListener("click", (event) => {
+        const reviewButton = event.target.closest(".review-row");
+        if (reviewButton) {
+          state.selectedMonth = reviewButton.dataset.month;
+          saveState();
+          render();
+          setView("balance");
+          return;
+        }
+
+        const deleteButton = event.target.closest(".delete-row");
+        if (!deleteButton) {
+          return;
+        }
+
+        state.items = state.items.filter((item) => item.id !== deleteButton.dataset.id);
+        saveState();
+        render();
+        showToast("削除しました");
+      });
+
+      renderCategoryOptions();
+      render();
+      setView(activeView);
+    })();
+  </script>
+</body>
+</html>
